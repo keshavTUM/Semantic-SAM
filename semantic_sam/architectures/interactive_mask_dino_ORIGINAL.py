@@ -687,24 +687,8 @@ class GeneralizedMaskDINO(nn.Module):
             processed_results = [{"mask_iou": all_batch_shape_iou[:, i]} for i in range(len(all_batch_shape_iou[0]))]
 
             processed_results_all = processed_results
-    
+
         return processed_results_all
-
-    def extract_embeddings(self, batch_inputs):
-        """
-        Extract embeddings for the given batch inputs.
-        """
-        images = [x["image"].to(self.device) for x in batch_inputs]
-        images = [(x - self.pixel_mean) / self.pixel_std for x in images]
-        images = ImageList.from_tensors(images, self.size_divisibility)
-
-        with torch.no_grad():
-            features = self.backbone(images.tensor)
-            mask_features, transformer_encoder_features, multi_scale_features = self.sem_seg_head.pixel_decoder.forward_features(features, None)
-        
-        # Assuming embeddings are obtained from multi_scale_features
-        embeddings = multi_scale_features[-1]  # Example: using the last scale features as embeddings
-        return embeddings
 
 @register_model
 def get_segmentation_model(cfg, **kwargs):

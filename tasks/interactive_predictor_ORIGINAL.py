@@ -7,6 +7,7 @@ from PIL import Image
 from detectron2.data import MetadataCatalog
 metadata = MetadataCatalog.get('coco_2017_train_panoptic')
 
+
 class SemanticSAMPredictor:
     def __init__(self, model, thresh=0.5, text_size=640, hole_scale=100, island_scale=100):
         """
@@ -109,35 +110,6 @@ class SemanticSAMPredictor:
     def predict_masks(self, image_ori, image, point=None):
         masks, ious = self.predict(image_ori, image, point)
         return self.process_multi_mask(masks, ious, image_ori)
-
-    def extract_embeddings(self, image_ori, image, point=None):
-        """
-        Extract embeddings for the given image and point.
-        """
-        width = image_ori.shape[1]
-        height = image_ori.shape[0]
-
-        data = {"image": image, "height": height, "width": width}
-        if point is None:
-            point = torch.tensor([[0.5, 0.5, 0.006, 0.006]]).cuda()
-        else:
-            point = torch.tensor(point).cuda()
-            point_ = point
-            point = point_.clone()
-            point[0, 0] = point_[0, 0]
-            point[0, 1] = point_[0, 1]
-            point = torch.cat([point, point.new_tensor([[0.005, 0.005]])], dim=-1)
-
-        self.point = point[:, :2].clone()*(torch.tensor([width, height]).to(point))
-
-        data['targets'] = [dict()]
-        data['targets'][0]['points'] = point
-        data['targets'][0]['pb'] = point.new_tensor([0.])
-
-        batch_inputs = [data]
-        embeddings = self.model.model.extract_embeddings(batch_inputs)
-
-        return embeddings
 
     @staticmethod
     def remove_small_regions(
