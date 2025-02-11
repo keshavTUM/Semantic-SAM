@@ -1,7 +1,17 @@
-.gitignore
-.gitattributes
-__pycache__
-*/__pycache__
-*/*/__pycache__
-*/*/*/__pycache__
+# Ignore Python virtual environments
+myenv-conda/
+.venv/
+env/
+venv/
 
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore other unnecessary files
+.idea/
+.vscode/
