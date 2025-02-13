@@ -14,9 +14,15 @@ mask_generator = SemanticSAMPredictor(build_semantic_sam(model_type='L', ckpt='/
 with torch.no_grad(), torch.cuda.amp.autocast():
     iou_sort_masks, area_sort_masks = mask_generator.predict_masks(original_image, input_image, point=[[0.5, 0.5]]) 
 
+# Print the number of masks generated
+print("Number of masks generated:", len(iou_sort_masks))
+
 # Extract embeddings
 with torch.no_grad(), torch.cuda.amp.autocast():
     embeddings = mask_generator.extract_embeddings(original_image, input_image, point=[[0.5, 0.5]])
+
+# Print the shape of the embeddings tensor
+print("Shape of embeddings tensor:", embeddings.shape)
 
 # Save or process embeddings as needed
 print("Embeddings:", embeddings)
